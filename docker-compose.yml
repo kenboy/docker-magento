@@ -1,0 +1,33 @@
+php:
+  build: ./php
+  links:
+    - "mysql:mysql"
+  ports:
+    - "80:80"
+    - "443:443"
+  environment:
+    XDEBUG_CONFIG: remote_host=172.17.0.1
+  volumes:
+    - ./html/:/var/www/html
+mysql:
+  image: mysql:5.5
+  ports:
+    - "3306:3306"
+  environment:
+    MYSQL_ROOT_PASSWORD: docker
+    MYSQL_USER: mage
+    MYSQL_PASSWORD: mage
+    MYSQL_DATABASE: magento
+  volumes:
+    - ./data/mysql:/var/lib/mysql
+phpmyadmin:
+  image: phpmyadmin/phpmyadmin
+  links:
+    - "mysql:mysql"
+  ports:
+    - "8080:80"
+  environment:
+    PMA_USER: root
+    PMA_PASSWORD: docker
+    PMA_HOST: mysql
+
