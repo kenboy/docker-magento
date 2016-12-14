@@ -29,3 +29,5 @@ RUN pecl install xdebug \
 RUN a2enmod rewrite
 
 RUN apt-get autoremove -y && apt-get clean all
+
+COPY etc/php.ini /usr/local/etc/php/

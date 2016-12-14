@@ -2,6 +2,7 @@ php:
   build: ./php
   links:
     - "mysql:mysql"
+    - "mailcatcher:mailcatcher"
   ports:
     - "80:80"
     - "443:443"
@@ -30,4 +31,5 @@ phpmyadmin:
     PMA_USER: root
     PMA_PASSWORD: docker
     PMA_HOST: mysql
-
+mailcatcher:
+  image: schickling/mailcatcher
