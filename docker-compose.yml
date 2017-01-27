@@ -26,7 +26,7 @@ phpmyadmin:
   environment:
     PMA_USER: root
     PMA_PASSWORD: docker
-    PMA_HOST: mysql.docker
+    PMA_HOST: mysql.local
 
 mailcatcher:
   image: schickling/mailcatcher
@@ -35,6 +35,7 @@ mailcatcher:
 dns:
   image: phensley/docker-dns
   container_name: dns
+  command: --domain local --resolver 8.8.8.8
   ports:
     - "172.17.0.1:53:53/udp"
   volumes:
