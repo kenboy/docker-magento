@@ -1,19 +1,16 @@
 php:
   build: ./php
-  links:
-    - "mysql:mysql"
-    - "mailcatcher:mailcatcher"
-  ports:
-    - "80:80"
-    - "443:443"
+  container_name: webservers
+  dns: 172.17.0.1
   environment:
     XDEBUG_CONFIG: remote_host=172.17.0.1
   volumes:
     - ./html/:/var/www/html
+
 mysql:
   image: mysql:5.5
-  ports:
-    - "3306:3306"
+  container_name: mysql
+  dns: 172.17.0.1
   environment:
     MYSQL_ROOT_PASSWORD: docker
     MYSQL_USER: mage
@@ -21,15 +18,23 @@ mysql:
     MYSQL_DATABASE: magento
   volumes:
     - ./data/mysql:/var/lib/mysql
+
 phpmyadmin:
   image: phpmyadmin/phpmyadmin
-  links:
-    - "mysql:mysql"
-  ports:
-    - "8080:80"
+  container_name: phpmyadmin
+  dns: 172.17.0.1
   environment:
     PMA_USER: root
     PMA_PASSWORD: docker
-    PMA_HOST: mysql
+    PMA_HOST: mysql.docker
+
 mailcatcher:
   image: schickling/mailcatcher
+  container_name: mailcatcher
+
+dns:
+  image: phensley/docker-dns
+  ports:
+    - "172.17.0.1:53:53/udp"
+  volumes:
+    - "/var/run/docker.sock:/docker.sock"
