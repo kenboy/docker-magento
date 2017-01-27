@@ -34,6 +34,7 @@ mailcatcher:
 
 dns:
   image: phensley/docker-dns
+  container_name: dns
   ports:
     - "172.17.0.1:53:53/udp"
   volumes:
