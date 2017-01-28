@@ -9,6 +9,12 @@ RUN docker-php-ext-install -j$(nproc) intl
 RUN apt-get install -y libxml2-dev
 RUN docker-php-ext-install -j$(nproc) soap
 
+RUN apt-get install -y libxslt1-dev
+RUN docker-php-ext-install -j$(nproc) xsl
+
+RUN apt-get install -y zlib1g-dev
+RUN docker-php-ext-install -j$(nproc) zip
+
 RUN apt-get install -y libmcrypt-dev
 RUN docker-php-ext-install -j$(nproc) mcrypt
 
