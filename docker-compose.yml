@@ -1,49 +1,46 @@
-webservers:
-  build: ./php
-  container_name: webservers
-  dns: 172.17.0.1
-  environment:
-    XDEBUG_CONFIG: remote_host=172.17.0.1
-    DNSDOCK_ALIAS: webservers.local
-  volumes:
-    - ./html/:/var/www/html
-
-mysql:
-  image: mysql:5.6
+--- 
+dnsdock: 
+  command: "-domain=\"local\""
+  container_name: dnsdock
+  environment: 
+    DNSDOCK_ALIAS: dnsdock.local
+  image: tonistiigi/dnsdock
+  ports: 
+    - "172.17.0.1:53:53/udp"
+  volumes: 
+    - "/var/run/docker.sock:/var/run/docker.sock"
+mailcatcher: 
+  container_name: mailcatcher
+  environment: 
+    DNSDOCK_ALIAS: mailcatcher.local
+  image: schickling/mailcatcher
+mysql: 
   container_name: mysql
-  dns: 172.17.0.1
-  environment:
+  dns: "172.17.0.1"
+  environment: 
+    DNSDOCK_ALIAS: mysql.local
+    MYSQL_DATABASE: magento
+    MYSQL_PASSWORD: mage
     MYSQL_ROOT_PASSWORD: docker
     MYSQL_USER: mage
-    MYSQL_PASSWORD: mage
-    MYSQL_DATABASE: magento
-    DNSDOCK_ALIAS: mysql.local
-  volumes:
-    - ./data/mysql:/var/lib/mysql
-
-phpmyadmin:
-  image: phpmyadmin/phpmyadmin
+  image: "mysql:5.6"
+  volumes: 
+    - "./data/mysql:/var/lib/mysql"
+phpmyadmin: 
   container_name: phpmyadmin
-  dns: 172.17.0.1
-  environment:
-    PMA_USER: root
-    PMA_PASSWORD: docker
-    PMA_HOST: mysql.local
+  dns: "172.17.0.1"
+  environment: 
     DNSDOCK_ALIAS: phpmyadmin.local
-
-mailcatcher:
-  image: schickling/mailcatcher
-  container_name: mailcatcher
-  environment:
-    DNSDOCK_ALIAS: mailcatcher.local
-
-dnsdock:
-  image: tonistiigi/dnsdock
-  container_name: dnsdock
-  command: -domain="local"
-  ports:
-    - "172.17.0.1:53:53/udp"
-  volumes:
-    - "/var/run/docker.sock:/var/run/docker.sock"
-  environment:
-    DNSDOCK_ALIAS: dnsdock.local
+    PMA_HOST: mysql.local
+    PMA_PASSWORD: docker
+    PMA_USER: root
+  image: phpmyadmin/phpmyadmin
+webservers: 
+  build: ./php
+  container_name: webservers
+  dns: "172.17.0.1"
+  environment: 
+    DNSDOCK_ALIAS: webservers.local
+    XDEBUG_CONFIG: remote_host=172.17.0.1
+  volumes: 
+    - "./html/:/var/www/html"
