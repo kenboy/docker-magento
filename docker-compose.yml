@@ -7,7 +7,6 @@ webservers:
   build: "./php"
   volumes:
   - "./html/:/var/www/html"
-  container_name: webservers
 phpmyadmin:
   environment:
     DNSDOCK_ALIAS: phpmyadmin.local
@@ -16,7 +15,6 @@ phpmyadmin:
     PMA_PASSWORD: docker
   image: phpmyadmin/phpmyadmin
   dns: 172.17.0.1
-  container_name: phpmyadmin
 dnsdock:
   environment:
     DNSDOCK_ALIAS: dnsdock.local
@@ -25,12 +23,10 @@ dnsdock:
   - 172.17.0.1:53:53/udp
   volumes:
   - "/var/run/docker.sock:/var/run/docker.sock"
-  container_name: dnsdock
 mailcatcher:
   environment:
     DNSDOCK_ALIAS: mailcatcher.local
   image: schickling/mailcatcher
-  container_name: mailcatcher
 mysql:
   environment:
     DNSDOCK_ALIAS: mysql.local
@@ -42,4 +38,3 @@ mysql:
   dns: 172.17.0.1
   volumes:
   - "./data/mysql:/var/lib/mysql"
-  container_name: mysql
