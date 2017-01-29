@@ -1,14 +1,15 @@
-php:
+webservers:
   build: ./php
   container_name: webservers
   dns: 172.17.0.1
   environment:
     XDEBUG_CONFIG: remote_host=172.17.0.1
+    DNSDOCK_ALIAS: webservers.local
   volumes:
     - ./html/:/var/www/html
 
 mysql:
-  image: mysql:5.5
+  image: mysql:5.6
   container_name: mysql
   dns: 172.17.0.1
   environment:
@@ -16,6 +17,7 @@ mysql:
     MYSQL_USER: mage
     MYSQL_PASSWORD: mage
     MYSQL_DATABASE: magento
+    DNSDOCK_ALIAS: mysql.local
   volumes:
     - ./data/mysql:/var/lib/mysql
 
@@ -27,16 +29,21 @@ phpmyadmin:
     PMA_USER: root
     PMA_PASSWORD: docker
     PMA_HOST: mysql.local
+    DNSDOCK_ALIAS: phpmyadmin.local
 
 mailcatcher:
   image: schickling/mailcatcher
   container_name: mailcatcher
+  environment:
+    DNSDOCK_ALIAS: mailcatcher.local
 
-dns:
-  image: phensley/docker-dns
-  container_name: dns
-  command: --domain local --resolver 8.8.8.8
+dnsdock:
+  image: tonistiigi/dnsdock
+  container_name: dnsdock
+  command: -domain="local"
   ports:
     - "172.17.0.1:53:53/udp"
   volumes:
-    - "/var/run/docker.sock:/docker.sock"
+    - "/var/run/docker.sock:/var/run/docker.sock"
+  environment:
+    DNSDOCK_ALIAS: dnsdock.local
