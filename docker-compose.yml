@@ -1,6 +1,5 @@
 --- 
 dnsdock: 
-  command: "-domain=\"local\""
   container_name: dnsdock
   environment: 
     DNSDOCK_ALIAS: dnsdock.local
