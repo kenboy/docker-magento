@@ -1,35 +1,43 @@
-FROM php:5-apache
+FROM php:7.1-apache
 
 RUN apt-get update
-RUN apt-get install -y g++ 
 
-RUN apt-get install -y libicu-dev
-RUN docker-php-ext-install -j$(nproc) intl
+RUN apt-get install -y \
+	g++ \
+	nano \
+	cron \
+	msmtp \
+	libicu-dev \
+	libxml2-dev \
+	libxslt1-dev \
+	zlib1g-dev \
+	libmcrypt-dev \
+	libfreetype6-dev \
+	libjpeg62-turbo-dev \
+	libpng12-dev
 
-RUN apt-get install -y libxml2-dev
-RUN docker-php-ext-install -j$(nproc) soap
+RUN docker-php-ext-configure \
+	gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 
-RUN apt-get install -y libxslt1-dev
-RUN docker-php-ext-install -j$(nproc) xsl
-
-RUN apt-get install -y zlib1g-dev
-RUN docker-php-ext-install -j$(nproc) zip
-
-RUN apt-get install -y libmcrypt-dev
-RUN docker-php-ext-install -j$(nproc) mcrypt
-
-RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql
-
-RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng12-dev
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
-RUN docker-php-ext-install -j$(nproc) gd
-
-RUN docker-php-ext-install -j$(nproc) gettext mbstring
+RUN docker-php-ext-install -j$(nproc) \ 
+	intl \
+	soap \
+	xsl \
+	zip \
+	mcrypt \
+	pdo \
+	pdo_mysql \
+	gd \
+	gettext \
+	mbstring \
+	opcache
 
 RUN pecl install xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
-    && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini
+    && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.profiler_enable_trigger=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.profiler_output_dir=/var/www/html/profile" >> /usr/local/etc/php/conf.d/xdebug.ini
 
 RUN a2enmod rewrite
 
