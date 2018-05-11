@@ -7,14 +7,6 @@ webservers:
   build: "./php"
   volumes:
   - "./html/:/var/www/html"
-phpmyadmin:
-  environment:
-    DNSDOCK_ALIAS: phpmyadmin.local
-    PMA_HOST: mysql.local
-    PMA_USER: root
-    PMA_PASSWORD: docker
-  image: phpmyadmin/phpmyadmin
-  dns: 172.17.0.1
 dnsdock:
   environment:
     DNSDOCK_ALIAS: dnsdock.local
