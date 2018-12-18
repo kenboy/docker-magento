@@ -23,7 +23,6 @@ RUN docker-php-ext-install -j$(nproc) \
 	soap \
 	xsl \
 	zip \
-	mcrypt \
 	pdo \
 	pdo_mysql \
 	gd \
