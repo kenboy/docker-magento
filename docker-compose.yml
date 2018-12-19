@@ -3,6 +3,7 @@ webservers:
   environment:
     DNSDOCK_ALIAS: webservers.local
     XDEBUG_CONFIG: remote_host=172.17.0.1
+    PHP_IDE_CONFIG: serverName=webservers.local
   dns: 172.17.0.1
   build: "./php"
   volumes:
