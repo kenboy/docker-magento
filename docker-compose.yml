@@ -51,3 +51,12 @@ es:
   build: "./containers/es"
   volumes:
   - "./data/es:/usr/share/elasticsearch/data"
+kibana:
+  image: kibana:4.6.6
+  ports: ['5601:5601']
+  networks: ['esnet']
+  depends_on: ['es']
+  restart: on-failure
+  dns: 172.17.0.1
+  environment:
+    DNSDOCK_ALIAS: webservers.kibana.local
