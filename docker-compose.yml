@@ -51,3 +51,29 @@ es:
   build: "./containers/es"
   volumes:
   - "./data/es:/usr/share/elasticsearch/data"
+kibana:
+  image: kibana:4.6.6
+  links: 
+    - es
+  dns: 172.17.0.1
+  environment:
+    DNSDOCK_ALIAS: webservers.kibana.local
+    ELASTICSEARCH_URL: http://webservers.es.local:9200
+redis:
+  image: redis
+  dns: 172.17.0.1
+  environment:
+    DNSDOCK_ALIAS: webservers.redis.local
+  volumes:
+    - "./data/redis:/var/lib/redis"
+  command: ["redis-server", "--appendonly", "yes"]
+rabbitmq:
+  image: rabbitmq:3.7-management
+  hostname: rabbitmq
+  dns: 172.17.0.1
+  volumes:
+    - "./data/rabbitmq:/var/lib/rabbitmq"
+  environment:
+    - RABBITMQ_DEFAULT_USER=guest
+    - RABBITMQ_DEFAULT_PASS=guest
+    - DNSDOCK_ALIAS=webservers.mq.local
