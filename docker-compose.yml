@@ -61,6 +61,7 @@ kibana:
     ELASTICSEARCH_URL: http://webservers.es.local:9200
 redis:
   image: redis
+  dns: 172.17.0.1
   environment:
     DNSDOCK_ALIAS: webservers.redis.local
   volumes:
@@ -69,6 +70,7 @@ redis:
 rabbitmq:
   image: rabbitmq:3.7-management
   hostname: rabbitmq
+  dns: 172.17.0.1
   volumes:
     - "./data/rabbitmq:/var/lib/rabbitmq"
   environment:
