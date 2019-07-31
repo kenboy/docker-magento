@@ -53,10 +53,22 @@ es:
   - "./data/es:/usr/share/elasticsearch/data"
 kibana:
   image: kibana:4.6.6
-  ports: ['5601:5601']
-  networks: ['esnet']
-  depends_on: ['es']
-  restart: on-failure
+  links: 
+    - es
   dns: 172.17.0.1
   environment:
     DNSDOCK_ALIAS: webservers.kibana.local
+    ELASTICSEARCH_URL: http://webservers.es.local:9200
+redis:
+  image: redis
+  volumes:
+    - "./data/redis:/var/lib/redis"
+  command: ["redis-server", "--appendonly", "yes"]
+rabbitmq:
+  image: rabbitmq:3.7-management
+  hostname: rabbitmq
+  volumes:
+    - "./data/rabbitmq:/var/lib/rabbitmq"
+  environment:
+    - RABBITMQ_DEFAULT_USER=guest
+    - RABBITMQ_DEFAULT_PASS=guest
