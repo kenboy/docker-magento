@@ -61,6 +61,8 @@ kibana:
     ELASTICSEARCH_URL: http://webservers.es.local:9200
 redis:
   image: redis
+  environment:
+    DNSDOCK_ALIAS: webservers.redis.local
   volumes:
     - "./data/redis:/var/lib/redis"
   command: ["redis-server", "--appendonly", "yes"]
@@ -72,3 +74,4 @@ rabbitmq:
   environment:
     - RABBITMQ_DEFAULT_USER=guest
     - RABBITMQ_DEFAULT_PASS=guest
+    - DNSDOCK_ALIAS=webservers.mq.local
