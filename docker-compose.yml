@@ -40,7 +40,7 @@ mysql:
     MYSQL_USER: mage
     MYSQL_DATABASE: magento
     MYSQL_ROOT_PASSWORD: docker
-  image: mysql:5.6
+  image: mysql:5.7
   dns: 172.17.0.1
   volumes:
   - "./data/mysql:/var/lib/mysql"
