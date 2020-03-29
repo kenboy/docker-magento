@@ -1,8 +1,18 @@
 version: "3.4"
 services:
-  web:
+  varnish:
     environment:
       DNSDOCK_ALIAS: webservers.local
+    image: varnish:6.0.3
+    dns: 172.17.0.1
+    network_mode: bridge
+    volumes:
+      - "./containers/varnish/default.vcl:/etc/varnish/default.vcl:ro"
+    links:
+      - web
+  web:
+    environment:
+      DNSDOCK_ALIAS: webservers.web.local
     dns: 172.17.0.1
     network_mode: bridge
     image: nginx:latest
