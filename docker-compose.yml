@@ -1,96 +1,148 @@
 version: "3.4"
+
+networks:
+  web:
+    external: true
+
 services:
+  traefik:
+    image: "traefik:v2.3"
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+      - "3306:3306"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.local`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.service=api@internal"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./containers/traefik/certs:/certs:ro"
+      - "./containers/traefik/traefik.yml:/traefik.yml:ro"
+      - "./containers/traefik/dynamic.yml:/dynamic.yml:ro"
+    networks: 
+      - web
+  mailcatcher:
+    image: schickling/mailcatcher
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mailcatcher.rule=Host(`mailcatcher.local`)"
+      - "traefik.http.routers.mailcatcher.entrypoints=web"
+      - "traefik.http.services.mailcatcher.loadbalancer.server.port=1080"
+    hostname: mailcatcher.local
+    networks:
+      web:
+        aliases:
+          - mailcatcher.local
   varnish:
-    environment:
-      DNSDOCK_ALIAS: webservers.local
     image: varnish:6.0.3
-    dns: 172.17.0.1
-    network_mode: bridge
+    hostname: magento.local
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.varnish.rule=Host(`magento.local`)"
+      - "traefik.http.routers.varnish.entrypoints=web"
+    networks:
+      web:
+        aliases:
+          - magento.local
     volumes:
       - "./containers/varnish/default.vcl:/etc/varnish/default.vcl:ro"
-    links:
+    depends_on:
       - web
   web:
-    environment:
-      DNSDOCK_ALIAS: webservers.web.local
-    dns: 172.17.0.1
-    network_mode: bridge
     image: nginx:latest
+    networks:
+      - web
     volumes:
       - "./html:/var/www/html"
       - "./containers/nginx/site.conf:/etc/nginx/conf.d/default.conf"
-    links:
+    depends_on:
       - php
   php:
-    environment:
-      DNSDOCK_ALIAS: webservers.php.local
-      XDEBUG_CONFIG: remote_host=172.17.0.1
-      PHP_IDE_CONFIG: serverName=webservers.local
-    dns: 172.17.0.1
-    network_mode: bridge
     build: "./containers/php"
+    container_name: "magento_php_1"
+    environment:
+      XDEBUG_CONFIG: remote_host=172.17.0.1
+      PHP_IDE_CONFIG: serverName=magento.local
+    networks: 
+      - web
     volumes:
       - "./www:/var/www"
-  dnsdock:
-    environment:
-      DNSDOCK_ALIAS: dnsdock.local
-    image: tonistiigi/dnsdock
-    network_mode: bridge
-    ports:
-    - 172.17.0.1:53:53/udp
-    volumes:
-    - "/var/run/docker.sock:/var/run/docker.sock"
-  mailcatcher:
-    environment:
-      DNSDOCK_ALIAS: mailcatcher.local
-    image: schickling/mailcatcher
-    network_mode: bridge
   mysql:
     environment:
-      DNSDOCK_ALIAS: webservers.mysql.local
       MYSQL_PASSWORD: mage
       MYSQL_USER: mage
       MYSQL_DATABASE: magento
       MYSQL_ROOT_PASSWORD: docker
     image: mysql:5.7
-    dns: 172.17.0.1
-    network_mode: bridge
+    hostname: magento.mysql.local
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=web"
+      - "traefik.tcp.routers.mysql.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mysql.entrypoints=mysql"
+      - "traefik.tcp.services.mysql.loadbalancer.server.port=3306"
+    networks:
+      web:
+        aliases:
+          - magento.mysql.local
     volumes:
-    - "./data/mysql:/var/lib/mysql"
+      - "./data/mysql:/var/lib/mysql"
   es:
     environment:
-      DNSDOCK_ALIAS: webservers.es.local
-    dns: 172.17.0.1
-    network_mode: bridge
+      - discovery.type=single-node
     build: "./containers/es"
+    hostname: magento.es.local
+    networks:
+      web:
+        aliases:
+          - magento.es.local
     volumes:
-    - "./data/es:/usr/share/elasticsearch/data"
-  kibana:
-    image: kibana:4.6.6
-    links: 
-      - es
-    dns: 172.17.0.1
-    network_mode: bridge
-    environment:
-      DNSDOCK_ALIAS: webservers.kibana.local
-      ELASTICSEARCH_URL: http://webservers.es.local:9200
+      - "./data/es:/usr/share/elasticsearch/data"
   redis:
-    image: redis
-    dns: 172.17.0.1
-    network_mode: bridge
-    environment:
-      DNSDOCK_ALIAS: webservers.redis.local
+    image: redis:5-buster
+    hostname: magento.redis.local
+    networks:
+      web:
+        aliases:
+          - magento.redis.local
     volumes:
-      - "./data/redis:/var/lib/redis"
+      - "./data/redis:/data"
     command: ["redis-server", "--appendonly", "yes"]
-  rabbitmq:
-    image: rabbitmq:3.7-management
-    hostname: rabbitmq
-    dns: 172.17.0.1
-    network_mode: bridge
+  rabbit:
+    environment:
+      RABBITMQ_DEFAULT_USER: mage
+      RABBITMQ_DEFAULT_PASS: mage
+    image: rabbitmq:3.8-management
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbit.rule=Host(`magento.rabbit.local`)"
+      - "traefik.http.routers.rabbit.entrypoints=web"
+      - "traefik.http.services.rabbit.loadbalancer.server.port=15672"
+    hostname: magento.rabbit.local
+    networks:
+      web:
+        aliases:
+          - magento.rabbit.local
     volumes:
       - "./data/rabbitmq:/var/lib/rabbitmq"
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.5.0
+    hostname: magento.zookeeper.local
+    networks:
+      web:
+        aliases:
+          - magento.zookeeper.local
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-      - DNSDOCK_ALIAS=webservers.mq.local
+      ZOOKEEPER_CLIENT_PORT: 2181
+  ofelia:
+    image: mcuadros/ofelia:latest
+    networks: 
+      - web
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./containers/ofelia/config.ini:/etc/ofelia/config.ini"
