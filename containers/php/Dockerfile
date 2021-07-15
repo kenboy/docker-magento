@@ -1,4 +1,4 @@
-FROM php:7.1-fpm
+FROM php:7.4-fpm
 
 RUN apt-get update
 
@@ -22,8 +22,7 @@ RUN apt-get install -y \
 	patch
 
 RUN docker-php-ext-configure \
-	gd --with-gd --with-webp-dir --with-jpeg-dir \
-		--with-png-dir --with-zlib-dir --with-xpm-dir --with-freetype-dir
+	gd --with-freetype --with-jpeg
 
 RUN docker-php-ext-install -j$(nproc) \ 
 	intl \
@@ -36,8 +35,7 @@ RUN docker-php-ext-install -j$(nproc) \
 	gettext \
 	mbstring \
 	opcache \
-	bcmath \
-	mcrypt
+	bcmath
 
 RUN pecl install xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
