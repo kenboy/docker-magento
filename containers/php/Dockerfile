@@ -44,7 +44,7 @@ RUN pecl install xdebug \
     && echo "xdebug.profiler_enable_trigger=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.profiler_output_dir=/var/www/html/profile" >> /usr/local/etc/php/conf.d/xdebug.ini
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php -- --1 --install-dir=/usr/local/bin --filename=composer
 RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
 RUN apt-get autoremove -y && apt-get clean all
 
