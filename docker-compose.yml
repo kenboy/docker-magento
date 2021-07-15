@@ -139,6 +139,8 @@ services:
           - magento.zookeeper.local
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    volumes:
+      - "./data/zookeeper:/var/lib/zookeeper"
   ofelia:
     image: mcuadros/ofelia:latest
     networks: 
