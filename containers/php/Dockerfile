@@ -21,6 +21,8 @@ RUN apt-get install -y \
 	pkg-config \
 	patch
 
+RUN apt-get autoremove -y && apt-get clean all
+
 RUN docker-php-ext-configure \
 	gd --with-freetype --with-jpeg
 
@@ -46,6 +48,5 @@ RUN pecl install xdebug \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --1 --install-dir=/usr/local/bin --filename=composer
 RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
-RUN apt-get autoremove -y && apt-get clean all
 
 COPY etc/php.ini /usr/local/etc/php/
