@@ -19,13 +19,23 @@ services:
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.service=api@internal"
+      
+      # middleware redirect
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      
+      # global redirect to https
+      - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.redirs.entrypoints=web"
+      - "traefik.http.routers.redirs.middlewares=redirect-to-https"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./containers/traefik/certs:/certs:ro"
       - "./containers/traefik/traefik.yml:/traefik.yml:ro"
       - "./containers/traefik/dynamic.yml:/dynamic.yml:ro"
-    networks: 
-      - web
+    networks:
+      web:
+        aliases:
+          - magento.local
   mailcatcher:
     image: schickling/mailcatcher
     labels:
@@ -45,10 +55,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.varnish.rule=Host(`magento.local`)"
       - "traefik.http.routers.varnish.entrypoints=web"
-    networks:
-      web:
-        aliases:
-          - magento.local
+    networks: 
+      - web
     volumes:
       - "./containers/varnish/default.vcl:/etc/varnish/default.vcl:ro"
     depends_on:
