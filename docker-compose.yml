@@ -80,6 +80,7 @@ services:
       - web
     volumes:
       - "./www:/var/www"
+      -  "/usr/local/share/ca-certificates:/usr/local/share/ca-certificates:ro"
   mysql:
     environment:
       MYSQL_PASSWORD: mage
