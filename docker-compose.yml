@@ -52,8 +52,9 @@ services:
     hostname: magento.local
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.varnish.rule=Host(`magento.local`)"
-      - "traefik.http.routers.varnish.entrypoints=web"
+      - "traefik.http.routers.varnish.rule=Host(`goldapple.local`)"
+      - "traefik.http.routers.varnish.entrypoints=websecure"
+      - "traefik.http.routers.varnish.tls=true"
     networks: 
       - web
     volumes:
