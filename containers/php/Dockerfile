@@ -18,13 +18,16 @@ RUN docker-php-ext-install -j$(nproc) \
 	intl soap xsl zip pdo pdo_mysql gd \
 	gettext mbstring opcache bcmath
 
-RUN pecl channel-update pecl.php.net \
-    && pecl install xdebug-2.9.8 \
+RUN pecl channel-update pecl.php.net
+RUN pecl install xdebug-2.9.8 \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.profiler_enable_trigger=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.profiler_output_dir=/var/www/html/profile" >> /usr/local/etc/php/conf.d/xdebug.ini
+
+RUN pecl install rdkafka-4.1.1 \
+    && docker-php-ext-enable rdkafka
 
 RUN pecl install zookeeper-0.7.2 \
     && docker-php-ext-enable zookeeper
