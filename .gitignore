@@ -1,2 +1,5 @@
 data/
-html/
+www/
+!www/html/pub/index.php
+!www/html/pub/health_check.php
+!www/html/nginx.conf.sample
