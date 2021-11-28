@@ -4,7 +4,7 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 
 RUN apt-get update --fix-missing \
     && apt-get install -y \
-	g++ nano msmtp libicu-dev libxml2-dev libxslt1-dev zlib1g-dev \
+	g++ nano msmtp libicu-dev libxml2-dev libxslt1-dev zlib1g-dev libonig-dev \
 	libmcrypt-dev libwebp-dev libxpm-dev libjpeg62-turbo-dev libpng-dev libfreetype6-dev git \
 	curl pkg-config patch webp libssl-dev librdkafka-dev libzookeeper-mt-dev libzip-dev nodejs \
     && rm -rf /var/lib/apt/lists/*
