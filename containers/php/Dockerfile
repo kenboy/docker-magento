@@ -1,7 +1,5 @@
 FROM php:7.4-fpm
 
-RUN apt-get update
-
 RUN apt-get update --fix-missing \
     && apt-get install -y \
 	g++ nano msmtp libicu-dev libxml2-dev libxslt1-dev zlib1g-dev \
