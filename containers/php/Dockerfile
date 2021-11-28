@@ -9,8 +9,6 @@ RUN apt-get update --fix-missing \
 	curl pkg-config patch webp libssl-dev librdkafka-dev libzookeeper-mt-dev libzip-dev nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get autoremove -y && apt-get clean all
-
 RUN docker-php-ext-configure \
 	gd --with-freetype --with-jpeg
 
